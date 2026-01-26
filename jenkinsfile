@@ -4,8 +4,8 @@ pipeline {
     stages {
         stage('building step') {
             steps {
-                sh 'docker build -t myapp:latest'
-                sh 'docker tag myapp:latest salman98/myapp:$BUILD_NUMBER'
+                sh 'docker build -t salman98/myapp:latest'
+                sh 'docker tag salman98/myapp:latest salman98/myapp:$BUILD_NUMBER'
             }
         }
         stage('dockerhub login step') {
