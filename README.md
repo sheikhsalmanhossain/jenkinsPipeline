@@ -1,51 +1,181 @@
-## Python fast api app :
+# GitHub Jenkins Docker Dockerhub Pipeline :
 
-### Step 1: install FastAPI and uvicorn (server to run it):
-
-``` pip install fastapi uvicorn ```
-
-### Step 2: Create a simple FastAPI app :
-
-Inside your project folder, create a file main.py:
+![Image Alt](https://github.com/sheikhsalmanhossain/jenkinsPipeline/blob/6fce10c1a992a0290289410ff1c3b6ed101de357/images/pipelineDiagram.png)
 
 
-```
-from fastapi import FastAPI
+### Pipeline summary :
 
-app = FastAPI()
-
-@app.get("/")
-def read_root():
-    return {"message": "Hello, FastAPI from Docker!"}
-```
+Code push from vs code to GitHub. GitHub webhook push to Jenkins. Jenkinsfile create docker image inside docker, tag it, login to dockerhub, push image & logout.
 
 
-### Run it locally:
-
-``` python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000 ```
-
-Open browser at: http://127.0.0.1:8000
-We can see output.
 
 
-### Create requirements.txt:
-``` pip freeze > requirements.txt ```
 
 
-### Create a Dockerfile:
+## Installing Jenkins in ec2 (ubuntu):
+
+In security group add inbound rules port 8080, hence jenkins is running in this port.
+
+In ec2 terminal run these commands to install java :
+
+``` sudo apt update && sudo apt upgrade -y ```
+
+``` sudo apt install -y fontconfig openjdk-17-jre ```
+
+``` java -version ```
+
+
+
+#### Install Jenkins via SNAP :
 
 ```
-FROM python:3.11-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+sudo apt update
+sudo apt install -y snapd
 ```
 
-### build dockerfile:
-``` docker build -t my-py-app ```
-### run container:
-``` docker run -p 5000:8000 my-py-app ```
+Install Jenkins :
 
-Now we can browse our app localhost:5000
+``` sudo snap install jenkins --classic ```
+
+Start Jenkins :
+```
+sudo systemctl enable snap.jenkins.daemon
+sudo systemctl start snap.jenkins.daemon
+```
+
+check if snapd is running :
+
+``` systemctl status snapd ```
+
+If it’s not active, start it:
+
+```
+sudo systemctl enable snapd
+sudo systemctl start snapd
+```
+
+Verify snap works :
+
+``` snap version ```
+
+If this fails, log out and log back in, or reboot once:
+
+``` sudo reboot ```
+
+Check Jenkins snap services :
+
+``` snap services Jenkins ```
+
+Start Jenkins 
+
+``` sudo snap start Jenkins ```
+
+Browse jenkins :
+
+``` ip:8080 ```
+
+
+
+## Installing docker on ec2 ubuntu 24.04 :
+
+``` sudo apt update && sudo apt upgrade -y ```
+
+Install required dependencies:
+
+``` sudo apt install -y ca-certificates curl gnupg lsb-release ```
+
+Add Docker’s official GPG key :
+
+```
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+  | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+```
+
+Set correct permissions:
+
+``` sudo chmod a+r /etc/apt/keyrings/docker.gpg ```
+
+Add the Docker repository :
+
+```
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" \
+| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+
+Install Docker Engine :
+
+```
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+Verify Docker is running :
+
+``` sudo systemctl status docker ```
+
+
+
+
+
+
+
+
+
+### Add Jenkins to docker group :
+Hence we install Jenkins via "snap", it does NOT create a jenkins Linux user.Snap Jenkins runs confined and uses snap permissions, not a system user.
+
+
+Allow Jenkins snap to access Docker :
+
+```
+sudo snap connect jenkins:docker
+sudo snap connect jenkins:docker-executables
+```
+
+Add current user to Docker group :
+
+``` sudo usermod -aG docker ubuntu ```
+
+then ``` logout ```
+
+Restart Docker & Jenkins :
+
+```
+sudo systemctl restart docker
+sudo snap restart Jenkins
+```
+
+Verify Docker works 
+
+``` docker ps ```
+
+
+( Snap Jenkins is not ideal for Docker-heavy CI.
+Instead Install Jenkins via apt, Or Run Jenkins inside Docker) 
+
+
+
+
+
+
+### Create a webhook in GitHub to push Jenkins when changes occurs :
+![Image Alt](https://github.com/sheikhsalmanhossain/jenkinsPipeline/blob/6fce10c1a992a0290289410ff1c3b6ed101de357/images/webhook.png)
+
+### Enable "GitHub hook trigger for GITScm pooling" from Jenkins & pipeline script from SCM :
+![Image Alt](https://github.com/sheikhsalmanhossain/jenkinsPipeline/blob/6fce10c1a992a0290289410ff1c3b6ed101de357/images/webhookDelivary.png)
+
+
+### After setting up, if we push some changes, webhook automatically pull from GitHub & push it to Jenkins :
+![Image Alt](https://github.com/sheikhsalmanhossain/jenkinsPipeline/blob/6fce10c1a992a0290289410ff1c3b6ed101de357/images/history.png)
+
+
+### Pipeline works perfectly fine & complete whole process :
+![Image Alt](https://github.com/sheikhsalmanhossain/jenkinsPipeline/blob/6fce10c1a992a0290289410ff1c3b6ed101de357/images/pipeline.png)
+
+
+### In DockerHub we can see that our image pushed successfully:
+![Image Alt](https://github.com/sheikhsalmanhossain/jenkinsPipeline/blob/6fce10c1a992a0290289410ff1c3b6ed101de357/images/dockerhub.png)
