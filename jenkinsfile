@@ -2,17 +2,24 @@ pipeline {
     agent any
 
     stages {
-        stage('build') {
+        stage('building step') {
             steps {
-                echo ' build done'
-                //sh 'docker build -t myapp:latest'
-                //sh 'docker tag myapp:latest salman98/myapp:latest'
+                sh 'docker build -t myapp:latest'
+                sh 'docker tag myapp:latest salman98/myapp:$BUILD_NUMBER'
             }
         }
-        stage('push') {
+        stage('dockerhub login step') {
             steps {
-                echo 'push done'
-                //sh 'docker push salman98/myapp:latest'
+                sh 'echo "dckr_pat_VYHpmPVWqqRrb46TVxax4zjZjDk" | docker login -u salman98 --password-stdin' //we will optimize later
+        }
+        stage('push step') {
+            steps {
+                sh 'docker push salman98/myapp:$BUILD_NUMBER'
+            }
+        }
+        stage('dockerhub logout step') {
+            steps {
+                sh 'docker logout'
             }
         }
         stage('new') {
