@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('building step') {
             steps {
-                sh 'docker build -t salman98/myapp:latest'
+                sh 'docker build -t salman98/myapp:latest .'
                 sh 'docker tag salman98/myapp:latest salman98/myapp:$BUILD_NUMBER'
             }
         }
