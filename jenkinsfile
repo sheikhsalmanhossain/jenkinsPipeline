@@ -21,7 +21,7 @@ pipeline {
                     parallel (
                         "step 1": {
                             echo "1"
-                        }
+                        },
                         "step 2": {
                             echo "2"
                         }
