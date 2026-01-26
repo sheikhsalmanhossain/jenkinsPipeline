@@ -15,6 +15,19 @@ pipeline {
                 //sh 'docker push salman98/myapp:latest'
             }
         }
-        
+        stage('new') {
+            steps {
+                script {
+                    parallel {
+                        "step 1": {
+                            echo "1"
+                        }
+                        "step 2": {
+                            echo "2"
+                        }
+                    }
+                }
+            }
+        }
     }
 }
