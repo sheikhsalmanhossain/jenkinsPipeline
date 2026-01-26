@@ -8,7 +8,7 @@ pipeline {
                 sh 'docker tag myapp:latest salman98/myapp:$BUILD_NUMBER'
             }
         }
-        stage('dockerhub login') {
+        stage('dockerhub login step') {
             steps {
                 sh 'echo "dckr_pat_VYHpmPVWqqRrb46TVxax4zjZjDk" | docker login -u salman98 --password-stdin' //we will optimize later
             }
