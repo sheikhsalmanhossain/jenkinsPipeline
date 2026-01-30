@@ -148,7 +148,7 @@ Restart Docker & Jenkins :
 
 ```
 sudo systemctl restart docker
-sudo snap restart Jenkins
+sudo snap restart jenkins
 ```
 
 Verify Docker works 
