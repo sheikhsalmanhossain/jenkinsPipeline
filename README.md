@@ -64,11 +64,13 @@ If this fails, log out and log back in, or reboot once:
 
 Check Jenkins snap services :
 
-``` snap services Jenkins ```
+``` snap services jenkins ```
 
 Start Jenkins 
 
-``` sudo snap start Jenkins ```
+``` sudo snap start jenkins ```
+
+In security group add inbound rules port 8080, hence jenkins is running in this port.
 
 Browse jenkins :
 
