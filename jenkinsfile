@@ -10,7 +10,9 @@ pipeline {
         }
         stage('dockerhub login step') {
             steps {
-                sh 'echo "dckr_pat_VYHpmPVWqqRrb46TVxax4zjZjDk" | docker login -u salman98 --password-stdin' //we will optimize later
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'pswd', usernameVariable: 'uname')]) {
+                sh 'echo ${pswd} | docker login -u ${uname} --password-stdin'
+                // password generate from jenkins credentials
             }
         }
         stage('push step') {
